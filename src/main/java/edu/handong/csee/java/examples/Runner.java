@@ -1,5 +1,6 @@
 package edu.handong.csee.java.examples;
 
+import java.io.File;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -10,8 +11,11 @@ import org.apache.commons.cli.Options;
 public class Runner {
 	
 	String path;
+	String fullpath;
 	boolean verbose;
 	boolean help;
+	int number =0;
+	
 
 	public static void main(String[] args) {
 
@@ -30,15 +34,60 @@ public class Runner {
 			}
 			
 			// path is required (necessary) data so no need to have a branch.
-			System.out.println("You provided \"" + path + "\" as the value of the option p");
+			
 			
 			// TODO show the number of files in the path
 			
+			if(path!=null) {
+				System.out.println("You provided \"" + path + "\" as the value of the option p");
+				
+				File dir = new File(path);
+				
+				for(File file : dir.listFiles()){
+					
+						number ++;
+				}
+				
+				System.out.println("number of files in the path : "+number);
+				
+			}else if(fullpath!=null) {
+				System.out.println("You provided \"" + fullpath + "\" as the value of the option f");
+				
+				File dir = new File(fullpath);
+				
+				for(File file : dir.listFiles()){
+					
+						number ++;
+						
+				}
+				
+				System.out.println("number of files in the path : "+number);
+				
+			}
+			
+			
+			
 			if(verbose) {
 				
-				// TODO list all files in the path
-				
-				System.out.println("Your program is terminated. (This message is shown because you turned on -v option!");
+				if(path!=null) {
+					File dir = new File(path);
+					
+					for(File file : dir.listFiles()){
+						
+							System.out.println(file.getName());
+					}
+					
+				}else if(fullpath!=null) {
+					File dir = new File(fullpath);
+					
+					for(File file : dir.listFiles()){
+						
+							System.out.println(file.getAbsolutePath());
+					}
+					
+				}
+					
+				System.out.println("Your program is terminated. (This message is shown because you turned on -v option!)");
 			}
 		}
 	}
@@ -51,8 +100,10 @@ public class Runner {
 			CommandLine cmd = parser.parse(options, args);
 
 			path = cmd.getOptionValue("p");
+			fullpath = cmd.getOptionValue("f");
 			verbose = cmd.hasOption("v");
 			help = cmd.hasOption("h");
+			
 
 		} catch (Exception e) {
 			printHelp(options);
@@ -71,9 +122,15 @@ public class Runner {
 				.desc("Set a path of a directory or a file to display")
 				.hasArg()
 				.argName("Path name to display")
-				.required()
 				.build());
-
+		
+		options.addOption(Option.builder("f").longOpt("fullpath")
+				.desc("Set a path of a directory or a file to display")
+				.hasArg()
+				.argName("Path name to display")
+				.build());
+		
+	
 		// add options by using OptionBuilder
 		options.addOption(Option.builder("v").longOpt("verbose")
 				.desc("Display detailed messages!")
